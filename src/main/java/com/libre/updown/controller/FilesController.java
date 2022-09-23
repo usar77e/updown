@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
@@ -26,18 +27,23 @@ public class FilesController {
 	@Autowired
 	FileStorageService fileStorage;
 	
+	@GetMapping(path = "/")
+	public String mensajeDePrueba() {
+		String mensaje = "Hola mundo";
+		return mensaje;
+	}
+	
 	@PostMapping("/upload")
 	public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
 		String message = null;
 		try {
 			fileStorage.save(file);
 			message = "Se guardo el archivo con exito: " + file.getOriginalFilename();
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
 		} catch(Exception e) {
 			message = "problema en el guardado del archivo: " + file.getOriginalFilename();
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
 		}
-		
-		return null;
 	}
 	
 	@GetMapping("/files")
